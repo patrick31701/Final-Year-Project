@@ -62,8 +62,12 @@ public class MainActivity extends AppCompatActivity {
             if (email.isEmpty()) {
                 Toast.makeText(this, "Please enter all required details", Toast.LENGTH_SHORT).show();
             } else {
-                biometricLogin();
-                PreformAuthentication(email, password);
+                if(biometricManager.canAuthenticate() != BiometricManager.BIOMETRIC_SUCCESS)
+                    PreformAuthentication(email, password);
+                else {
+                    biometricLogin();
+                    PreformAuthentication(email, password);
+                }
             }
         });
     }
@@ -106,9 +110,9 @@ public class MainActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     Toast.makeText(MainActivity.this, "Logged in successfully", Toast.LENGTH_SHORT).show();
                     //start new activity with email and password
+                    String userId = fAuth.getCurrentUser().getUid();
                     Intent intent = new Intent(MainActivity.this, LoggedIn.class);
-                    intent.putExtra("email", email);
-                    intent.putExtra("password", password);
+                    intent.putExtra("userId", userId);
                     startActivity(intent);
                 } else {
                     Toast.makeText(MainActivity.this, "Error!" + task.getException().getMessage(), Toast.LENGTH_SHORT).show();
