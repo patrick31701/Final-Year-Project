@@ -7,9 +7,12 @@ import androidx.biometric.BiometricPrompt;
 import androidx.core.content.ContextCompat;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Toast;
 
@@ -27,6 +30,8 @@ public class MainActivity extends AppCompatActivity {
     BiometricPrompt.PromptInfo promptInfo;
     FirebaseAuth fAuth;
     FirebaseUser user;
+    CheckBox rememberMe;
+    int count=0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,13 +42,25 @@ public class MainActivity extends AppCompatActivity {
         login = findViewById(R.id.btn_login);
         fAuth = FirebaseAuth.getInstance();
         user = fAuth.getCurrentUser();
+        rememberMe = findViewById(R.id.rememberMe);
 
+        SharedPreferences sharedPreferences1 = getSharedPreferences("login", MODE_PRIVATE);
+        String emailRememberMe = sharedPreferences1.getString("email", "");
+        this.email.setText(emailRememberMe);
+
+        if(emailRememberMe =="")
+        {
+            rememberMe.setChecked(false);
+        }
+        else
+        {
+            rememberMe.setChecked(true);
+        }
 
         BiometricManager biometricManager = BiometricManager.from(this);
         switch (biometricManager.canAuthenticate()) {
             case BiometricManager.BIOMETRIC_SUCCESS:
                 Toast.makeText(getApplicationContext(), "App can authenticate using biometrics.", Toast.LENGTH_SHORT).show();
-                //password.setEnabled(false);
                 break;
             case BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE:
                 Toast.makeText(getApplicationContext(), "No biometric features available on this device.", Toast.LENGTH_SHORT).show();
@@ -59,17 +76,37 @@ public class MainActivity extends AppCompatActivity {
         login.setOnClickListener(v -> {
             String email = this.email.getText().toString();
             String password = this.password.getText().toString();
+            if(!rememberMe.isChecked()) {
+                SharedPreferences sharedPreferences = getSharedPreferences("login", MODE_PRIVATE);
+                SharedPreferences.Editor editor = sharedPreferences.edit();
+                editor.remove("email");
+                editor.apply();
+            }
             if (email.isEmpty()) {
                 Toast.makeText(this, "Please enter all required details", Toast.LENGTH_SHORT).show();
             } else {
-                if(biometricManager.canAuthenticate() != BiometricManager.BIOMETRIC_SUCCESS)
+                if(biometricManager.canAuthenticate() != BiometricManager.BIOMETRIC_SUCCESS) {
+                    if(rememberMe.isChecked()) {
+                        SharedPreferences sharedPreferences = getSharedPreferences("login", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("email", email);
+                        editor.apply();
+                    }
                     PreformAuthentication(email, password);
+                }
                 else {
                     biometricLogin();
+                    if(rememberMe.isChecked()) {
+                        SharedPreferences sharedPreferences = getSharedPreferences("login", MODE_PRIVATE);
+                        SharedPreferences.Editor editor = sharedPreferences.edit();
+                        editor.putString("email", email);
+                        editor.apply();
+                    }
                     PreformAuthentication(email, password);
                 }
             }
         });
+
     }
 
     public void biometricLogin() {
@@ -84,24 +121,32 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
-
+                count = 0;
                 Toast.makeText(getApplicationContext(), "Authentication succeeded!", Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onAuthenticationFailed() {
                 super.onAuthenticationFailed();
-                Toast.makeText(getApplicationContext(), "Authentication failed", Toast.LENGTH_SHORT).show();
+                count++;
+                if (count == 3) {
+                    Toast.makeText(getApplicationContext(), "Authentication failed", Toast.LENGTH_SHORT).show();
+                    fAuth.signOut();
+                    startActivity(new Intent(getApplicationContext(), MainActivity.class));
+                    finish();
+                } else
+                    Toast.makeText(getApplicationContext(), "Authentication failed", Toast.LENGTH_SHORT).show();
             }
         });
 
         promptInfo = new BiometricPrompt.PromptInfo.Builder()
-                .setTitle("Biometric login for my app")
+                .setTitle("Biometric login to validate access")
                 .setSubtitle("Log in using your biometric credential")
-                .setNegativeButtonText("Use account password")
+                .setNegativeButtonText("Cancel")
                 .build();
         biometricPrompt.authenticate(promptInfo);
     }
+
 
     public void PreformAuthentication(String email, String password) {
         fAuth.signInWithEmailAndPassword(email, password).addOnCompleteListener(new OnCompleteListener<AuthResult>() {
