@@ -31,7 +31,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseAuth fAuth;
     FirebaseUser user;
     CheckBox rememberMe;
-    int count=0;
+    int count = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,12 +48,9 @@ public class MainActivity extends AppCompatActivity {
         String emailRememberMe = sharedPreferences1.getString("email", "");
         this.email.setText(emailRememberMe);
 
-        if(emailRememberMe =="")
-        {
+        if (emailRememberMe == "") {
             rememberMe.setChecked(false);
-        }
-        else
-        {
+        } else {
             rememberMe.setChecked(true);
         }
 
@@ -76,7 +73,7 @@ public class MainActivity extends AppCompatActivity {
         login.setOnClickListener(v -> {
             String email = this.email.getText().toString();
             String password = this.password.getText().toString();
-            if(!rememberMe.isChecked()) {
+            if (!rememberMe.isChecked()) {
                 SharedPreferences sharedPreferences = getSharedPreferences("login", MODE_PRIVATE);
                 SharedPreferences.Editor editor = sharedPreferences.edit();
                 editor.remove("email");
@@ -85,18 +82,17 @@ public class MainActivity extends AppCompatActivity {
             if (email.isEmpty()) {
                 Toast.makeText(this, "Please enter all required details", Toast.LENGTH_SHORT).show();
             } else {
-                if(biometricManager.canAuthenticate() != BiometricManager.BIOMETRIC_SUCCESS) {
-                    if(rememberMe.isChecked()) {
+                if (biometricManager.canAuthenticate() != BiometricManager.BIOMETRIC_SUCCESS) {
+                    if (rememberMe.isChecked()) {
                         SharedPreferences sharedPreferences = getSharedPreferences("login", MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString("email", email);
                         editor.apply();
                     }
                     PreformAuthentication(email, password);
-                }
-                else {
+                } else {
                     biometricLogin();
-                    if(rememberMe.isChecked()) {
+                    if (rememberMe.isChecked()) {
                         SharedPreferences sharedPreferences = getSharedPreferences("login", MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString("email", email);
