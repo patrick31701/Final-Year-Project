@@ -8,9 +8,11 @@
             <AndroidTestResultsTableState>
               <option name="preferredColumnWidths">
                 <map>
+                  <entry key="228db64817027ece" value="120" />
                   <entry key="Duration" value="90" />
                   <entry key="Pixel_XL_API_30" value="120" />
                   <entry key="Tests" value="360" />
+                  <entry key="samsung&#10; SM-G965F" value="120" />
                 </map>
               </option>
             </AndroidTestResultsTableState>

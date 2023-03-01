@@ -19,6 +19,9 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.Executor;
 
 public class LoggedIn extends AppCompatActivity {
@@ -100,14 +103,29 @@ public class LoggedIn extends AppCompatActivity {
 
         networkLabAccess.setOnClickListener(v -> {
             biometricLogin();
+            if (count == 0) {
+                String date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+                String time = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+                myRef2.child(userId).child("Network Labs").child(date).child(time).setValue("true");
+            }
         });
 
         developmentLabAccess.setOnClickListener(v -> {
             biometricLogin();
+            if (count == 0) {
+                String date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+                String time = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+                myRef2.child(userId).child("Development Labs").child(date).child(time).setValue("true");
+            }
         });
 
         generalAccess.setOnClickListener(v -> {
             biometricLogin();
+            if (count == 0) {
+                String date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+                String time = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+                myRef2.child(userId).child("General Access").child(date).child(time).setValue("true");
+            }
         });
     }
 
@@ -118,6 +136,7 @@ public class LoggedIn extends AppCompatActivity {
             public void onAuthenticationError(int errorCode, CharSequence errString) {
                 super.onAuthenticationError(errorCode, errString);
                 Toast.makeText(getApplicationContext(), "Authentication error: " + errString, Toast.LENGTH_SHORT).show();
+                count = 3;
             }
 
             @Override

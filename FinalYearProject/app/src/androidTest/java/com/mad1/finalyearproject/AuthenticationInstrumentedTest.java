@@ -22,7 +22,7 @@ public class AuthenticationInstrumentedTest {
     private FirebaseAuth mAuth;
 
     @Before
-    public void setUp(){
+    public void setUp() {
         // Initialize Firebase Auth
         Context context = InstrumentationRegistry.getInstrumentation().getTargetContext();
         FirebaseApp.initializeApp(context);
