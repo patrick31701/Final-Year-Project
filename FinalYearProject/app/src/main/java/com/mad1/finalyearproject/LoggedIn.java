@@ -160,7 +160,7 @@ public class LoggedIn extends AppCompatActivity {
         String userId = getIntent().getStringExtra("userId");
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://final-year-project-3600b-default-rtdb.europe-west1.firebasedatabase.app/");
         DatabaseReference myRef = database.getReference("User Data");
-        myRef.child(userId).child(labType).child(date).child(time).setValue("true");
+        myRef.child(userId).child(labType).child(date).child(time).setValue(value);
     }
 }
 
