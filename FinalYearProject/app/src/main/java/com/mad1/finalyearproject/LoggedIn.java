@@ -45,7 +45,6 @@ public class LoggedIn extends AppCompatActivity {
         String userId = getIntent().getStringExtra("userId");
 
         SharedPreferences sharedPreferences = getSharedPreferences("login", MODE_PRIVATE);
-        String email = sharedPreferences.getString("email", "");
 
         //get instance of a eu database
         FirebaseDatabase database = FirebaseDatabase.getInstance("https://final-year-project-3600b-default-rtdb.europe-west1.firebasedatabase.app/");
@@ -102,34 +101,19 @@ public class LoggedIn extends AppCompatActivity {
         });
 
         networkLabAccess.setOnClickListener(v -> {
-            biometricLogin();
-            if (count == 0) {
-                String date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
-                String time = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
-                myRef2.child(userId).child("Network Labs").child(date).child(time).setValue("true");
-            }
+            biometricLogin("Network Labs");
         });
 
         developmentLabAccess.setOnClickListener(v -> {
-            biometricLogin();
-            if (count == 0) {
-                String date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
-                String time = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
-                myRef2.child(userId).child("Development Labs").child(date).child(time).setValue("true");
-            }
+            biometricLogin("Development Labs");
         });
 
         generalAccess.setOnClickListener(v -> {
-            biometricLogin();
-            if (count == 0) {
-                String date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
-                String time = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
-                myRef2.child(userId).child("General Access").child(date).child(time).setValue("true");
-            }
+            biometricLogin("General Access");
         });
     }
 
-    public void biometricLogin() {
+    public void biometricLogin(String labType) {
         Executor executor = ContextCompat.getMainExecutor(this);
         androidx.biometric.BiometricPrompt biometricPrompt = new androidx.biometric.BiometricPrompt(LoggedIn.this, executor, new androidx.biometric.BiometricPrompt.AuthenticationCallback() {
             @Override
@@ -143,6 +127,7 @@ public class LoggedIn extends AppCompatActivity {
             public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
                 count = 0;
+                logData(labType, "true");
                 Toast.makeText(getApplicationContext(), "Authentication succeeded!", Toast.LENGTH_SHORT).show();
             }
 
@@ -152,6 +137,7 @@ public class LoggedIn extends AppCompatActivity {
                 count++;
                 if (count == 3) {
                     Toast.makeText(getApplicationContext(), "Authentication failed", Toast.LENGTH_SHORT).show();
+                    logData(labType, "false");
                     fAuth.signOut();
                     startActivity(new Intent(getApplicationContext(), MainActivity.class));
                     finish();
@@ -168,5 +154,13 @@ public class LoggedIn extends AppCompatActivity {
         biometricPrompt.authenticate(promptInfo);
     }
 
+    public void logData(String labType, String value) {
+        String date = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(new Date());
+        String time = new SimpleDateFormat("HH:mm:ss", Locale.getDefault()).format(new Date());
+        String userId = getIntent().getStringExtra("userId");
+        FirebaseDatabase database = FirebaseDatabase.getInstance("https://final-year-project-3600b-default-rtdb.europe-west1.firebasedatabase.app/");
+        DatabaseReference myRef = database.getReference("User Data");
+        myRef.child(userId).child(labType).child(date).child(time).setValue("true");
+    }
 }
 
