@@ -91,14 +91,14 @@ public class MainActivity extends AppCompatActivity {
                     }
                     PreformAuthentication(email, password);
                 } else {
-                    biometricLogin();
                     if (rememberMe.isChecked()) {
                         SharedPreferences sharedPreferences = getSharedPreferences("login", MODE_PRIVATE);
                         SharedPreferences.Editor editor = sharedPreferences.edit();
                         editor.putString("email", email);
                         editor.apply();
                     }
-                    PreformAuthentication(email, password);
+                    biometricLogin();
+                    //PreformAuthentication(email, password);
                 }
             }
         });
@@ -118,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
             public void onAuthenticationSucceeded(BiometricPrompt.AuthenticationResult result) {
                 super.onAuthenticationSucceeded(result);
                 count = 0;
+                PreformAuthentication(email.getText().toString(), password.getText().toString());
                 Toast.makeText(getApplicationContext(), "Authentication succeeded!", Toast.LENGTH_SHORT).show();
             }
 

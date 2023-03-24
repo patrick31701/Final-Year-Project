@@ -37,7 +37,8 @@ public class AuthenticationInstrumentedTest {
                         FirebaseUser user = mAuth.getCurrentUser();
                         assertNotNull(user);
                     } else {
-                        fail("signInWithEmailAndPassword failed with valid credentials: " + task.getException().getMessage());
+                        fail("signInWithEmailAndPassword failed with valid credentials: " +
+                                task.getException().getMessage());
                     }
                 });
     }
@@ -47,7 +48,8 @@ public class AuthenticationInstrumentedTest {
         mAuth.signInWithEmailAndPassword("test@example.com", "invalidpassword")
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
-                        fail("signInWithEmailAndPassword succeeded with invalid credentials");
+                        fail("signInWithEmailAndPassword succeeded" +
+                                " with invalid credentials");
                     } else {
                         assertNotNull(task.getException());
                     }
