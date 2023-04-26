@@ -32,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseUser user;
     CheckBox rememberMe;
     int count = 0;
+    Boolean biometricLogin = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,6 +59,7 @@ public class MainActivity extends AppCompatActivity {
         switch (biometricManager.canAuthenticate()) {
             case BiometricManager.BIOMETRIC_SUCCESS:
                 Toast.makeText(getApplicationContext(), "App can authenticate using biometrics.", Toast.LENGTH_SHORT).show();
+                biometricLogin = true;
                 break;
             case BiometricManager.BIOMETRIC_ERROR_NO_HARDWARE:
                 Toast.makeText(getApplicationContext(), "No biometric features available on this device.", Toast.LENGTH_SHORT).show();
@@ -81,7 +83,8 @@ public class MainActivity extends AppCompatActivity {
             }
             if (email.isEmpty()) {
                 Toast.makeText(this, "Please enter all required details", Toast.LENGTH_SHORT).show();
-            } else {
+            }
+            else {
                 if (biometricManager.canAuthenticate() != BiometricManager.BIOMETRIC_SUCCESS) {
                     if (rememberMe.isChecked()) {
                         SharedPreferences sharedPreferences = getSharedPreferences("login", MODE_PRIVATE);
@@ -98,7 +101,6 @@ public class MainActivity extends AppCompatActivity {
                         editor.apply();
                     }
                     biometricLogin();
-                    //PreformAuthentication(email, password);
                 }
             }
         });
