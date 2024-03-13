@@ -1,6 +1,6 @@
 # Final-Year-Project
 
-# Title: Biometric Security
+# Title: SecureAccess
 #write read me to explain how to install, configure and run the app
 
 
